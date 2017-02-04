@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<launch>
+
+  <arg name="ZED_launch_dir" default="$(find zed_camera_ros)/launch/zed.launch"/>
+  <arg name="3DM_launch_dir" default="$(find microstrain_3dmgx2_imu)/launch/robotIMU.launch"/>
+
+	<!-- Camera launch -->
+  <include file="$(arg ZED_launch_dir)" /> 
+
+  <!-- IMU launch -->
+  <include file="$(arg 3DM_launch_dir)" />
+
+
+
+  <node pkg="tf" type="static_transform_publisher" name="base_to_imu_broadcaster"      args="0 0 0 0.7071 0.7071 0 0 /imu /base_link 100" />  
+
+
+<!--
+  <node pkg="tf" type="static_transform_publisher" name="base_to_imu_broadcaster"      args="0 -0.04445 0.127 0.7071 0.7071 0 0 /imu /base_link 100" />  
+-->
+
+  <!-- Rosserial launch -->
+<!--
+  <include file="$(find rosserial_python)/launch/RemoteControl.launch" />
+-->
+
+
+</launch>

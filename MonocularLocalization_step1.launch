@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<launch>
+
+  <arg name="CM3_launch_dir" default="$(find flea3)/launch/CM3.launch"/>
+  <arg name="3DM_launch_dir" default="$(find microstrain_3dmgx2_imu)/launch/robotIMU.launch"/>
+
+	<!-- Camera launch -->
+  <include file="$(arg CM3_launch_dir)" /> 
+
+  <!-- IMU launch -->
+  <include file="$(arg 3DM_launch_dir)" />
+
+  <!-- Rosserial launch -->
+  <include file="$(find rosserial_python)/launch/RemoteControl.launch" />
+
+</launch>

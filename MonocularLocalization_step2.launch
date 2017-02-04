@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<launch>
+
+  <!-- Rovio launch -->
+  <include file="$(find rovio)/launch/monocular.launch" />
+
+  <!-- Hector trajectory server launch -->
+  <include file="$(find hector_trajectory_server)/launch/trajectory_save.launch" />
+
+  <node pkg="rosbag" type="rosbag" name="rosbag_record_diag"
+       args="record /cam0/image_raw /cam0/camera_info /imu0 /trajectory /tf -O ~/Desktop/RobotBagFile/newBag.bag"/>  
+
+</launch>

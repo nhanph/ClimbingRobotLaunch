@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<launch>
+
+  <arg name="ZED_launch_dir" default="$(find zed_camera_ros)/launch/zed.launch"/>
+  <arg name="3DM_launch_dir" default="$(find microstrain_3dmgx2_imu)/launch/robotIMU.launch"/>
+
+	<!-- Camera launch -->
+  <include file="$(arg ZED_launch_dir)" /> 
+
+  <!-- IMU launch -->
+  <include file="$(arg 3DM_launch_dir)" />
+
+	 <!-- Image viewer output topics -->
+
+	 <!--
+  <node name="zed_left_uncrop" pkg="image_view" type="image_view" respawn="false" output="screen">
+    <remap from="image" to="/zed/left/image_raw"/>
+    <param name="autosize" value="true" />
+    <param name="window_name" value="Zed Left Camera(/zed/left/image_raw)" />
+  </node>
+
+  <node name="zed_left_crop" pkg="image_view" type="image_view" respawn="false" output="screen">
+    <remap from="image" to="/zed_crop/left/image_raw"/>
+    <param name="autosize" value="true" />
+    <param name="window_name" value="Zed Left Camera Cropped(/zed_crop/left/image_mono)" />
+  </node>
+
+  <node name="zed_right_uncrop" pkg="image_view" type="image_view" respawn="false" output="screen">
+    <remap from="image" to="/zed/right/image_raw"/>
+    <param name="autosize" value="true" />
+    <param name="window_name" value="Zed Right Camera(/zed/right/image_raw)" />
+  </node>
+
+  <node name="zed_right_crop" pkg="image_view" type="image_view" respawn="false" output="screen">
+    <remap from="image" to="/zed_crop/right/image_raw"/>
+    <param name="autosize" value="true" />
+    <param name="window_name" value="Zed Right Camera Cropped(/zed_crop/right/image_mono)" />
+  </node>
+  -->
+
+</launch>

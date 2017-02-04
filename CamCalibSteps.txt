@@ -1,0 +1,58 @@
+#Single camera
+rosrun camera_calibration cameracalibrator.py --size 6x7 --square 0.0675 image:=/cam0/image_raw camera:=/cam0
+
+kalibr_calibrate_cameras --target checkerboard.yaml --bag static2.bag --models pinhole-radtan --topics /cam0/image_raw
+
+#Stereo camera
+
+#without throttle
+rosrun camera_calibration cameracalibrator.py --size 7x6 --square 0.0675 right:=/zed_crop/right/image_raw left:=/zed_crop/left/image_raw right_camera:=/zed_crop/right left_camera:=/zed_crop/left --no-service-check
+
+rosbag record /zed_crop/left/image_raw /zed_crop/right/image_raw --split --size=4000 -O ZEDStaticNoThrot.bag
+
+kalibr_calibrate_cameras --target checkerboard.yaml --bag ZEDStaticNoThrot.bag --models pinhole-radtan pinhole-radtan --topics /zed_crop/left/image_raw /zed_crop/right/image_raw
+
+#with throttle
+rosrun camera_calibration cameracalibrator.py --size 7x6 --square 0.0675 right:=/cam1/image_raw left:=/cam0/image_raw right_camera:=/cam1 left_camera:=/cam0 --no-service-check
+
+rosbag record /cam0/image_raw /cam1/image_raw --split --size=4000 -O ZedStatic.bag
+
+rosbag record /cam0/image_raw /cam1/image_raw -O ZedStatic_checkerboard.bag -b 1024
+
+rosbag record /cam0/image_raw /cam1/image_raw -O ZedStatic_aprilgrid.bag -b 1024
+
+rosbag record /cam0/image_raw /cam1/image_raw /imu0 -O ZedDynamic_aprilgrid.bag -b 1024
+
+rosbag record /cam0/image_raw /cam1/image_raw /imu0 -b 2048
+
+kalibr_calibrate_cameras --target checkerboard.yaml --bag ZEDStaticWithThrot_0.bag --models pinhole-radtan pinhole-radtan --topics /cam0/image_raw /cam1/image_raw
+
+kalibr_calibrate_cameras --target april_6x6_80x80cm.yaml --bag ZedStatic_aprilgrid.bag --models pinhole-radtan pinhole-radtan --topics /cam0/image_raw /cam1/image_raw --approx-sync 0.01
+
+kalibr_calibrate_cameras --target checkerboard.yaml --bag ZedStatic_checkerboard.bag --models pinhole-radtan pinhole-radtan --topics /cam0/image_raw /cam1/image_raw --approx-sync 0.01
+
+kalibr_calibrate_imu_camera --target april_6x6_80x80cm.yaml --cam camchain-ZedStatic_checkerboard.yaml --imu imu_3DMGX25_datasheet.yaml --bag ZedDynamic_aprilgrid_11s-93s.bag --bag-from-to 11 93
+
+kalibr_calibrate_imu_camera --target april_6x6_80x80cm.yaml --cam camchain-ZedStatic_checkerboard.yaml --imu imu_3DMGX25.yaml --bag ZedDynamic_aprilgrid_11s-93s.bag --bag-from-to 11 93 --time-calibration --perform-synchronization -timeoffset-padding 0.04 --verbose
+
+
+#Install Rovio:
+
+git clone https://github.com/ethz-asl/rovio.git
+
+cd rovio
+
+git submodule update --init --recursive
+
+git checkout 02753db
+
+catkin build rovio --cmake-args -DCMAKE_BUILD_TYPE=Release
+
+#Install kindr
+
+git clone https://github.com/ethz-asl/kindr.git
+
+cd kindr
+
+git checkout b6815f5
+
