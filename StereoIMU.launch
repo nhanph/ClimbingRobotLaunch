@@ -1,41 +1,141 @@
 <?xml version="1.0" encoding="UTF-8"?> 
 <launch>
 
+<!-- 
   <arg name="ZED_launch_dir" default="$(find zed_camera_ros)/launch/zed.launch"/>
-  <arg name="3DM_launch_dir" default="$(find microstrain_3dmgx2_imu)/launch/robotIMU.launch"/>
+  <arg name="3DM_launch_dir" default="$(find imu_3dm_gx3)/launch/test.launch"/>
+  <arg name="UM7_launch_dir" default="$(find um7)/launch/um7.launch"/>
+  -->
 
 	<!-- Camera launch -->
+	<!--
   <include file="$(arg ZED_launch_dir)" /> 
 
-  <!-- IMU launch -->
-  <include file="$(arg 3DM_launch_dir)" />
-
-	 <!-- Image viewer output topics -->
-
-	 <!--
-  <node name="zed_left_uncrop" pkg="image_view" type="image_view" respawn="false" output="screen">
-    <remap from="image" to="/zed/left/image_raw"/>
-    <param name="autosize" value="true" />
-    <param name="window_name" value="Zed Left Camera(/zed/left/image_raw)" />
-  </node>
-
-  <node name="zed_left_crop" pkg="image_view" type="image_view" respawn="false" output="screen">
-    <remap from="image" to="/zed_crop/left/image_raw"/>
-    <param name="autosize" value="true" />
-    <param name="window_name" value="Zed Left Camera Cropped(/zed_crop/left/image_mono)" />
-  </node>
-
-  <node name="zed_right_uncrop" pkg="image_view" type="image_view" respawn="false" output="screen">
-    <remap from="image" to="/zed/right/image_raw"/>
-    <param name="autosize" value="true" />
-    <param name="window_name" value="Zed Right Camera(/zed/right/image_raw)" />
-  </node>
-
-  <node name="zed_right_crop" pkg="image_view" type="image_view" respawn="false" output="screen">
-    <remap from="image" to="/zed_crop/right/image_raw"/>
-    <param name="autosize" value="true" />
-    <param name="window_name" value="Zed Right Camera Cropped(/zed_crop/right/image_mono)" />
-  </node>
   -->
+
+  <!-- IMU launch -->
+  <!--
+  <include file="$(arg UM7_launch_dir)" />
+
+  -->
+
+
+  <node pkg="zed_camera_ros" type="zed_camera_ros" name="zed_camera_ros" >
+
+  	<param name="frame_rate" type="int" value="20" />
+
+  	<!-- Resolution settings:
+  	0: 640 x 360
+  	1: 960 x 540
+  	2: 1280 x 720		
+  	-->
+  	<param name="resolution" type="int" value="0" />
+
+  </node>
+
+  <node ns="zed" pkg="stereo_image_proc" type="stereo_image_proc" name="stereo_image_proc" >
+
+  	<!-- Disparity pre-filtering -->
+
+  	<!-- Normalization window size, pixels. default: 9-->
+  	<param name="prefilter_size" value="9" />
+
+  	<!-- Bound on normalized pixel values. default: 31-->
+  	<param name="prefilter_cap" value="31" />
+
+  	<!-- Disparity correlation -->
+
+  	<!-- Edge size (pixels) of the correlation window for matching. Values must be odd, in the range 5 to 255 (but with an extra performance hit for values larger than 21). Larger values have smoother disparity results, but smear out small features and depth discontinuities. default: 15-->
+  	<param name="correlation_window_size" value="19" />
+
+  	<!-- Minimum disparity, or the offset to the disparity search window. By setting to a positive value, the cameras become more "cross-eyed" and will find objects closer to the cameras. If the cameras are "verged" (inclined toward each other), it may be appropriate to set min_disparity to a negative value. When min_disparity is greater than 0, objects at large distances will not be found.  default: 0-->
+  	<param name="min_disparity" value="10" />
+
+  	<!-- The size of the disparity search window (pixels). Together with min_disparity, this defines the "horopter," the 3D volume that is visible to the stereo algorithm. default: 64-->
+  	<param name="disparity_range" value="64" />
+
+  	<!-- Disparity post-filtering -->
+
+  	<!-- Filters disparity readings based on a comparison to the next-best correlation along the epipolar line. Matches where uniqueness_ratio > (best_match - next_match) / next_match are filtered out. default: 15.0-->
+  	<param name="uniqueness_ratio" value="10" />
+
+  	<!-- Filters disparity readings based on the amount of texture in the correlation window. default: 10-->
+  	<param name="texture_threshold" value="10" />
+
+  	<!-- Filters disparity regions that are less than this number of pixels. For example, a value of 100 means that all regions with fewer than 100 pixels will be rejected. default: 100-->
+  	<param name="speckle_size" value="200" />
+
+  	<!-- Groups disparity regions based on their connectedness. Disparities are grouped together in the same region if they are within this distance in pixels. default: 4-->
+  	<param name="speckle_range" value="4" />
+
+  	<!-- Synchronization -->
+
+  	<!-- Whether to use approximate synchronization. Set to true if the left and right cameras do not produce exactly synced timestamps. default: false-->
+  	<param name="approximate_sync" value="false" />
+
+  	<!-- Size of message queue for each synchronized topic. You may need to raise this if images take significantly longer to travel over the network than camera info and/or the delay from disparity processing is too long. default: 5-->
+  	<param name="queue_size" value="5" />
+
+  </node>
+
+  <!-- UM7 launch -->
+
+  <!-- 
+  <node name="imu0" pkg="um7" type="um7_driver" respawn="true" output="screen">
+	<param name="port" value="/dev/um7"/>
+	<param name="baud" value="921600"/>
+	<param name="frame_id" value="imu0"/>
+	<param name="proc_rate" value="235"/>  --> <!--240mapsto200-->
+
+	<!-- 
+	<param name="mag_updates" value="false"/>
+	<param name="quat_mode" value="false"/>
+	<param name="zero_gyros" value="true"/>
+	<param name="covariance" value="99999.9 0 0 0 99999.9 0 0 0 99999.9"/>
+	<param name="enu_axes_order" value="0 1 2"/>
+	<param name="enu_axes_fix" value="1 1 1"/>
+   </node>
+
+   -->
+
+   
+   <!-- VN100 launch -->
+    <arg name="output" default="screen"/>
+    <arg name="imu" default="imu"/>
+
+    <arg name="port" default="/dev/vn100" />
+    <arg name="frame_id" default="imu_link"/>
+    <arg name="baudrate" default="921600"/>
+    <arg name="imu_rate" default="200"/>
+
+    <!-- Sync out settings -->
+    <!-- to disable this just set it to < 0 -->
+    <arg name="sync_rate" default="20"/>
+    <arg name="sync_pulse_width_us" default="1000"/>
+
+    <arg name="binary_output" default="false"/>
+
+    <!-- Ros Topic settings -->
+    <arg name="enable_mag" default="false"/>
+    <arg name="enable_pres" default="false"/>
+    <arg name="enable_temp" default="false"/>
+
+    <node pkg="imu_vn_100" name="$(arg imu)" type="imu_vn_100_cont_node" output="$(arg output)">
+        <param name="port" type="string" value="$(arg port)"/>
+        <param name="baudrate" type="int" value="$(arg baudrate)"/>
+        <param name="frame_id" type="string" value="$(arg frame_id)"/>
+        <param name="imu_rate" type="int" value="$(arg imu_rate)"/>
+        <param name="binary_output" type="bool" value="$(arg binary_output)"/>
+        <param name="enable_mag" type="bool" value="$(arg enable_mag)"/>
+        <param name="enable_pres" type="bool" value="$(arg enable_pres)"/>
+        <param name="enable_temp" type="bool" value="$(arg enable_temp)"/>
+        <param name="sync_rate" type="int" value="$(arg sync_rate)"/>
+        <param name="sync_pulse_width_us" type="int" value="$(arg sync_pulse_width_us)"/>
+
+        <remap from="/imu/imu" to="/imu0" />
+    </node>
+
+
+
 
 </launch>

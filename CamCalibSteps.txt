@@ -5,15 +5,14 @@ kalibr_calibrate_cameras --target checkerboard.yaml --bag static2.bag --models p
 
 #Stereo camera
 
-#without throttle
-rosrun camera_calibration cameracalibrator.py --size 7x6 --square 0.0675 right:=/zed_crop/right/image_raw left:=/zed_crop/left/image_raw right_camera:=/zed_crop/right left_camera:=/zed_crop/left --no-service-check
-
-rosbag record /zed_crop/left/image_raw /zed_crop/right/image_raw --split --size=4000 -O ZEDStaticNoThrot.bag
-
-kalibr_calibrate_cameras --target checkerboard.yaml --bag ZEDStaticNoThrot.bag --models pinhole-radtan pinhole-radtan --topics /zed_crop/left/image_raw /zed_crop/right/image_raw
-
-#with throttle
 rosrun camera_calibration cameracalibrator.py --size 7x6 --square 0.0675 right:=/cam1/image_raw left:=/cam0/image_raw right_camera:=/cam1 left_camera:=/cam0 --no-service-check
+
+rosrun camera_calibration cameracalibrator.py --size 7x6 --square 0.0675 right:=/zed/right/image_raw left:=/zed/left/image_raw right_camera:=/zed/right left_camera:=/zed/left --no-service-check
+
+
+rosrun camera_calibration cameracalibrator.py --size 7x6 --square 0.05 right:=/zed/right/image_raw left:=/zed/left/image_raw right_camera:=/zed/right left_camera:=/zed/left --no-service-check
+
+rosbag record /cam0/image_raw /cam1/image_raw -O ZedStatic_checkerboard.bag -b 2048
 
 rosbag record /cam0/image_raw /cam1/image_raw --split --size=4000 -O ZedStatic.bag
 
@@ -25,6 +24,10 @@ rosbag record /cam0/image_raw /cam1/image_raw /imu0 -O ZedDynamic_aprilgrid.bag 
 
 rosbag record /cam0/image_raw /cam1/image_raw /imu0 -b 2048
 
+rosbag record /zed/left/image_raw /zed/right/image_raw -b 2048 -O ZedStatic_360p.bag
+
+rosbag record /zed/left/image_raw /zed/right/image_raw /imu0 -b 2048 -O ZedDynamic.bag
+
 kalibr_calibrate_cameras --target checkerboard.yaml --bag ZEDStaticWithThrot_0.bag --models pinhole-radtan pinhole-radtan --topics /cam0/image_raw /cam1/image_raw
 
 kalibr_calibrate_cameras --target april_6x6_80x80cm.yaml --bag ZedStatic_aprilgrid.bag --models pinhole-radtan pinhole-radtan --topics /cam0/image_raw /cam1/image_raw --approx-sync 0.01
@@ -33,7 +36,10 @@ kalibr_calibrate_cameras --target checkerboard.yaml --bag ZedStatic_checkerboard
 
 kalibr_calibrate_imu_camera --target april_6x6_80x80cm.yaml --cam camchain-ZedStatic_checkerboard.yaml --imu imu_3DMGX25_datasheet.yaml --bag ZedDynamic_aprilgrid_11s-93s.bag --bag-from-to 11 93
 
-kalibr_calibrate_imu_camera --target april_6x6_80x80cm.yaml --cam camchain-ZedStatic_checkerboard.yaml --imu imu_3DMGX25.yaml --bag ZedDynamic_aprilgrid_11s-93s.bag --bag-from-to 11 93 --time-calibration --perform-synchronization -timeoffset-padding 0.04 --verbose
+kalibr_calibrate_imu_camera --target april_6x6_80x80cm.yaml --cam camchain-ZedStatic_checkerboard.yaml --imu imu_3DMGX25.yaml --bag ZedDynamic_aprilgrid_11s-93s.bag --bag-from-to 11 93 --time-calibration --perform-synchronization --timeoffset-padding 0.04 --verbose
+
+python ~/kalibr_workspace/src/Kalibr/aslam_offline_calibration/kalibr/python/exporters/kalibr_rovio_config --cam camchain
+
 
 
 #Install Rovio:
