@@ -76,6 +76,10 @@
   	<!-- Size of message queue for each synchronized topic. You may need to raise this if images take significantly longer to travel over the network than camera info and/or the delay from disparity processing is too long. default: 5-->
   	<param name="queue_size" value="5" />
 
+    <param name="use_voxel" value="false" />
+
+    <param name="voxel_size" value="0.1" />
+
   </node>
 
   <!-- UM7 launch -->

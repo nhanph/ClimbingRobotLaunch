@@ -14,3 +14,8 @@ If you've got local source code you want to add to a new remote new git reposito
     git remote add origin [URL From Step 1]
 6.    to push up your master branch (change master to something else for a different branch):
     git push -p origin master
+
+
+git remote rename origin upstream
+
+git remote add origin [https://github.com/nhanph/image_pipeline.git]
